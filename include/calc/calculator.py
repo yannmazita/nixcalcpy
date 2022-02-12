@@ -18,3 +18,23 @@ class Expression:
                 self.tmpNumString += self.postfixExpr[i]
                 i += 1
         return i
+
+    def ClearNumber(self):
+        self.tmpNumString = ""
+
+    def IsOperator(self, inputString):
+        if inputString == '^' or inputString == '/' or inputString == "ln" or inputString == "ln":
+            self.isIntegerOnly = False
+            return True
+        # Update self.isIntegerOnly to false when using additional mathematical functions.
+
+        if inputString == '+' or inputString == '-' or inputString == '*':
+            return True
+        else:
+            return False
+
+    def IsLeftAssociative(self, operator):
+        if operator == '-' or operator == '/' or operator == '+' or operator == '*':
+            return True
+        return False
+
