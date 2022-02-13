@@ -38,7 +38,7 @@ class Expression:
             return True
         return False
 
-    def Tokenizer(self, inputExpr, exprType):
+    def __Tokenizer(self, inputExpr, exprType):
         tokens = []
         jumpIdx = 0
         for i in range(0, len(inputExpr)):
@@ -56,3 +56,6 @@ class Expression:
                 tokens.append((self.tmpNumString, 'n'))
                 self.ClearNumber()
         return tokens
+
+    def Tokenizer(self):
+        return self.__Tokenizer(self.postfixExpr, "post")
