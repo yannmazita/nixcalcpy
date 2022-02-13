@@ -1,3 +1,5 @@
+import queue
+
 class Expression:
     def __init__(self, infixExpr):
         self.__infixExpr = infixExpr  # Infix expression input by user.
@@ -5,7 +7,7 @@ class Expression:
         self.__tmpNumString = ""      # Temporary number stored in string form
         self.isIntegerOnly = True   # Whether operands or the operator need only integers.
 
-    def __StoreNumber(self, pos, exprType):
+    def __StoreNumber(self, pos: int, exprType: str) -> int:
         i = pos
         if exprType == "in":
             while (i < len(self.__infixExpr)) and (self.__infixExpr[i].isdigit()) or (self.__infixExpr[i] == '.'):
@@ -22,7 +24,7 @@ class Expression:
     def __ClearNumber(self):
         self.__tmpNumString = ""
 
-    def __IsOperator(self, inputString):
+    def __IsOperator(self, inputString: str) -> bool:
         if inputString == '^' or inputString == '/' or inputString == "ln" or inputString == "ln":
             self.isIntegerOnly = False
             return True
@@ -33,12 +35,12 @@ class Expression:
         else:
             return False
 
-    def __IsLeftAssociative(self, operator):
+    def __IsLeftAssociative(self, operator: str) -> bool:
         if operator == '-' or operator == '/' or operator == '+' or operator == '*':
             return True
         return False
 
-    def __Tokenizer(self, inputExpr, exprType):
+    def __Tokenizer(self, inputExpr: str, exprType: str) -> list:
         tokens = []
         jumpIdx = 0
         for i in range(0, len(inputExpr)):
@@ -57,10 +59,10 @@ class Expression:
                 self.__ClearNumber()
         return tokens
 
-    def Tokenizer(self):
+    def Tokenizer(self) -> list:
         return self.__Tokenizer(self.__postfixExpr, "post")
 
-    def __GetPrecedence(self, operator1, operator2):
+    def __GetPrecedence(self, operator1: str, operator2: str) -> int:
         precedenceList = ['^',1,'*',2,'/',2,'+',3,'-',3] # Precedence list, lowest number means highest precedence.
         precedencePair = [0,0]  # Precedence of given operators, first value for "operator1', second value for 'operator2'.
         for i in range(0, 10, 2):
@@ -74,3 +76,10 @@ class Expression:
             return -1
         else:
             return 0
+
+    def __Next(inputQueue: Union[queue.Queue, queue.LifoQueue]) -> str:
+        nextItem = inputQueue.get()
+        inputQueue.put(nextItem)
+        return nextItem
+
+
