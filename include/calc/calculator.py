@@ -1,28 +1,28 @@
 class Expression:
     def __init__(self, infixExpr):
-        self.infixExpr = infixExpr  # Infix expression input by user.
-        self.postfixExpr = ""       # Postfix conversion of 'infixExpr'.
-        self.tmpNumString = ""      # Temporary number stored in string form
+        self.__infixExpr = infixExpr  # Infix expression input by user.
+        self.__postfixExpr = ""       # Postfix conversion of '__infixExpr'.
+        self.__tmpNumString = ""      # Temporary number stored in string form
         self.isIntegerOnly = True   # Whether operands or the operator need only integers.
 
-    def StoreNumber(self, pos, exprType):
+    def __StoreNumber(self, pos, exprType):
         i = pos
         if exprType == "in":
-            while (i < len(self.infixExpr)) and (self.infixExpr[i].isdigit()) or (self.infixExpr[i] == '.'):
-                if self.infixExpr[i] == '.':
+            while (i < len(self.__infixExpr)) and (self.__infixExpr[i].isdigit()) or (self.__infixExpr[i] == '.'):
+                if self.__infixExpr[i] == '.':
                     self.isIntegerOnly = False
-                self.tmpNumString += self.infixExpr[i]
+                self.__tmpNumString += self.__infixExpr[i]
                 i += 1
         elif exprType == "post":
-            while (i < len(self.postfixExpr)) and (self.postfixExpr[i].isdigit()) or (self.postfixExpr[i] == '.'):
-                self.tmpNumString += self.postfixExpr[i]
+            while (i < len(self.__postfixExpr)) and (self.__postfixExpr[i].isdigit()) or (self.__postfixExpr[i] == '.'):
+                self.__tmpNumString += self.__postfixExpr[i]
                 i += 1
         return i
 
-    def ClearNumber(self):
-        self.tmpNumString = ""
+    def __ClearNumber(self):
+        self.__tmpNumString = ""
 
-    def IsOperator(self, inputString):
+    def __IsOperator(self, inputString):
         if inputString == '^' or inputString == '/' or inputString == "ln" or inputString == "ln":
             self.isIntegerOnly = False
             return True
@@ -33,7 +33,7 @@ class Expression:
         else:
             return False
 
-    def IsLeftAssociative(self, operator):
+    def __IsLeftAssociative(self, operator):
         if operator == '-' or operator == '/' or operator == '+' or operator == '*':
             return True
         return False
@@ -45,17 +45,32 @@ class Expression:
             if (i < jumpIdx) and (i != 0):
                 # Jump characters until jumpIdx.
                 continue
-            if self.IsOperator(inputExpr[i]):
+            if self.__IsOperator(inputExpr[i]):
                 tokens.append((inputExpr[i], 'o'))
             elif inputExpr[i] == '(':
                 tokens.append((inputExpr[i], 'l'))
             elif inputExpr[i] == ')':
                 tokens.append((inputExpr[i], 'r'))
             elif inputExpr[i].isdigit():
-                jumpIdx = self.StoreNumber(i, exprType)
-                tokens.append((self.tmpNumString, 'n'))
-                self.ClearNumber()
+                jumpIdx = self.__StoreNumber(i, exprType)
+                tokens.append((self.__tmpNumString, 'n'))
+                self.__ClearNumber()
         return tokens
 
     def Tokenizer(self):
-        return self.__Tokenizer(self.postfixExpr, "post")
+        return self.__Tokenizer(self.__postfixExpr, "post")
+
+    def __GetPrecedence(self, operator1, operator2):
+        precedenceList = ['^',1,'*',2,'/',2,'+',3,'-',3] # Precedence list, lowest number means highest precedence.
+        precedencePair = [0,0]  # Precedence of given operators, first value for "operator1', second value for 'operator2'.
+        for i in range(0, 10, 2):
+            if operator1 == precedenceList[i]:
+                precedencePair[0] = precedenceList[i + 1]
+            elif operator2 == precedenceList[i]:
+                precedencePair[1] = precedenceList[i + 1]
+        if precedencePair[0] < precedencePair[1]:
+            return 1
+        elif precedencePair[1] < precedencePair[0]:
+            return -1
+        else:
+            return 0
