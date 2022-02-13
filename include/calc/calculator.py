@@ -38,3 +38,21 @@ class Expression:
             return True
         return False
 
+    def Tokenizer(self, inputExpr, exprType):
+        tokens = []
+        jumpIdx = 0
+        for i in range(0, len(inputExpr)):
+            if (i < jumpIdx) and (i != 0):
+                # Jump characters until jumpIdx.
+                continue
+            if self.IsOperator(inputExpr[i]):
+                tokens.append((inputExpr[i], 'o'))
+            elif inputExpr[i] == '(':
+                tokens.append((inputExpr[i], 'l'))
+            elif inputExpr[i] == ')':
+                tokens.append((inputExpr[i], 'r'))
+            elif inputExpr[i].isdigit():
+                jumpIdx = self.StoreNumber(i, exprType)
+                tokens.append((self.tmpNumString, 'n'))
+                self.ClearNumber()
+        return tokens
