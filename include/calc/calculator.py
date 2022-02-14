@@ -77,9 +77,36 @@ class Expression:
         else:
             return 0
 
-    def __Next(inputQueue: Union[queue.Queue, queue.LifoQueue]) -> str:
+    def __Next(self, inputQueue: queue.Queue | queue.LifoQueue) -> str:
         nextItem = inputQueue.get()
         inputQueue.put(nextItem)
         return nextItem
 
+    def __BuildPostfixQueue(self) -> queue.Queue:
+        outputQueue = queue.Queue()         # First in, first out container.
+        operatorStack = queue.LifoQueue()   # Last in, first out container.
 
+        tokens = self.__Tokenizer(self.__infixExpr, "in")  # Infix expression tokens.
+        for i in range(0, len(tokens)):
+            if tokens[i][1] == 'n':
+                outputQueue.put(tokens[i][0])
+            elif tokens[i][1] == 'o':
+                while (operatorStack.empty() == False and (self.__IsOperator(self.__Next(operatorStack)) and self.__Next(operatorStack) != '(') and
+                        (self.__GetPrecedence(self.__Next(operatorStack), tokens[i][0])==1 or
+                            ((self.__GetPrecedence(self.__Next(operatorStack), tokens[i][0])==0) and self.__IsLeftAssociative(tokens[i][0])))):
+                    outputQueue.put(self.__Next(operatorStack))
+                    operatorStack.get()
+                operatorStack.put(tokens[i][0])
+            elif tokens[i][1] == 'l':
+                operatorStack.put(tokens[i][0])
+            elif tokens[i][1] == 'r':
+                while (operatorStack.empty() == False and (self.__Next(operatorStack) != '(')):
+                    outputQueue.put(self.__Next(operatorStack))
+                    operatorStack.get()
+                if (operatorStack.empty() == False) and (self.__Next(operatorStack) == '('):
+                    operatorStack.get()
+        while operatorStack.empty() == False:
+            if self.__Next(operatorStack) != '(':
+                outputQueue.put(self.__Next(operatorStack))
+                operatorStack.get()
+        return outputQueue
