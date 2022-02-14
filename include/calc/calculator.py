@@ -110,3 +110,14 @@ class Expression:
                 outputQueue.put(self.__Next(operatorStack))
                 operatorStack.get()
         return outputQueue
+
+    def __BuildPostfixString(self):
+        que = self.__BuildPostfixQueue()
+        while que.empty() == False:
+            self.__postfixExpr += self.__Next(que)
+            self.__postfixExpr += " "
+            # Appending spaces because operands are no longer separated by operators.
+            que.get()
+        if len(self.__postfixExpr) > 1:
+            self.__postfixExpr = self.__postfixExpr[:-1]
+            # Removing the trailing space might be pointless.
